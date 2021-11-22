@@ -95,14 +95,13 @@ def train(dataloader, model, loss, device, num_epochs, batch_size, max_lr, num_w
                     
                     writer.add_scalar("val/loss", cost.item(), log_step)
                     writer.add_scalar("val/iou", iou, log_step)
-                    writer.add_scalar("val/lr", optimizer.param_groups[0]["lr"], log_step)
                 
                 print('Epoch: %03d/%03d |  Valid Loss: %.4f | Valid IoU: %.4f%%' % (
                       epoch+1, num_epochs, 
                       np.mean(valid_loss),
                       np.mean(valid_iou)))
         results[fold_+1] = np.mean(valid_iou)
-        torch.save(model.state_dict(), 'fold-{d}_IoU-{:.3f}'.format(fold_+1, np.mean(valid_iou)))
+        torch.save(model.state_dict(), 'fold-{:d}_IoU-{:.3f}.pt'.format(fold_+1, np.mean(valid_iou)))
         
 
     # Print fold results

@@ -5,6 +5,7 @@ from task1model import CNNencoder_gn, CNNencoder_ln, Concat_gn, Concat_ln, Conv2
 
 class VitUNet(nn.Module):
     def __init__(self,
+                 out_channels,
                  vit=vit_small(patch_size=8, num_classes=0), 
                  patch_size=8
                  ):
@@ -48,7 +49,7 @@ class VitUNet(nn.Module):
         self.concat4 = Concat_ln(32, 23)
         self.convup4 = CNNencoder_ln(23, 23)
 
-        self.Segmentation_head = nn.Conv2d(23, 23, kernel_size=1, stride=1, bias=False)
+        self.Segmentation_head = nn.Conv2d(23, out_channels, kernel_size=1, stride=1, bias=False)
     
     def forward(self, x):
         with torch.no_grad():
@@ -101,10 +102,11 @@ class VitUNet(nn.Module):
         out = self.Segmentation_head(u4)
         # (B, 23, 512, 768)
         
-        return out
+        return torch.sigmoid(out)
     
 class VitUNet16(nn.Module):
     def __init__(self,
+                 out_channels,
                  vit=vit_small(patch_size=16, num_classes=0), 
                  patch_size=16
                  ):
@@ -152,7 +154,7 @@ class VitUNet16(nn.Module):
         self.concat5 = Concat_ln(32, 23)
         self.convup5 = CNNencoder_ln(23, 23)
 
-        self.Segmentation_head = nn.Conv2d(23, 23, kernel_size=1, stride=1, bias=False)
+        self.Segmentation_head = nn.Conv2d(23, out_channels, kernel_size=1, stride=1, bias=False)
     
     def forward(self, x):
         with torch.no_grad():
@@ -215,4 +217,4 @@ class VitUNet16(nn.Module):
         out = self.Segmentation_head(u5)
         # (B, 23, 512, 768)
         
-        return out
+        return torch.sigmoid(out)

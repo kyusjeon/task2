@@ -10,6 +10,7 @@ from task2dataLoader import get_datapath, DataSegmentationLoader
 from task2utils import *
 from task2models import UNet
 from task2train import train
+from vit_unet import VitUNet, VitUNet16
 
 parser = argparse.ArgumentParser(description='Pytorch Brain Tumor Segmentation UNet')
 
@@ -17,11 +18,11 @@ parser.add_argument('--in_channel', default=3, type=int,
                     help='perturbation magnitude')
 parser.add_argument('--out_channel', default=1, type=int,
                     help='perturbation magnitude')
-parser.add_argument('--epochs', default=300, type=int,
+parser.add_argument('--epochs', default=150, type=int,
                     help='perturbation magnitude')
 parser.add_argument('--nfold', default=5, type=int,
                     help='perturbation magnitude')
-parser.add_argument('--bach_size', default=8, type=int)
+parser.add_argument('--bach_size', default=88, type=int)
 parser.add_argument('--max_lr', default=1e-3, type=float)
 parser.add_argument('--num_workers', default=8, type=int)
 parser.set_defaults(argument=True)
@@ -38,7 +39,7 @@ def main():
     args = parser.parse_args()    
     
     #Use GPU
-    device = 'cuda'  if torch.cuda.is_available() else 'cpu'
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     if torch.cuda.is_available():
         print(f'CUDA is available. Your device is {device}.')
     else:
@@ -54,7 +55,8 @@ def main():
     dataloader = DataSegmentationLoader(image, mask)
 
     model = UNet(in_channels=args.in_channel, out_channels=args.out_channel).to(device)
-    model == nn.DataParallel(model)
+    # model = VitUNet16(args.out_channel).to(device=device)
+    model = nn.DataParallel(model)
     
     loss = DiceLoss()
     
